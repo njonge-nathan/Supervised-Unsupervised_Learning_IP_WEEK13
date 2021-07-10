@@ -1,0 +1,862 @@
+---
+title: "Nathan_Njonge_IP_R_Fundamentals"
+author: "Nathan_Njonge"
+date: "7/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Research Question
+
+A Kenyan entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ your services as a Data Science Consultant to help her identify which individuals are most likely to click on her ads.
+
+### Metric for success
+This project will be successful when we correctly identify which individuals are most likely to click on the ads.
+
+### Experimental design taken
+1. Specify the research question.
+2. Perform Exploratory Data Analysis- Univariate and Bivariate
+3. Make conclusions and recommendations
+
+### Data Relevance
+1. Daily.Time.Spent.on.Site -> This refers to the duration a user spends on the site.
+2. Age -> This refers to the age of the user
+3. Area.Income 
+3. Daily.Internet.Usage -> this refers to the duration a user spends on the internet
+4. Ad.Topic.Line -> this refers to the context of the ad
+5. City -> this represents the city of the user
+6. Male -> this identifys whether the user is male or female
+7. Country -> this represents the country of the user.
+8. Timestamp
+9. Clicked.on.Ad -> this represents whether the user clicked on the ad or not.
+
+
+```{r}
+# view the top of our dataset
+dataset <- read.csv("http://bit.ly/IPAdvertisingData")
+head(dataset)
+```
+
+```{r}
+# view the bottom of our dataset
+tail(dataset)
+```
+
+
+```{r}
+dim(dataset)
+# our dataset has 1000 rows and 10 columns
+```
+Our Dataset has 1000 rows and 10 columns.
+
+
+
+
+
+```{r}
+# check for total in each columns null values
+colSums(is.na(dataset))
+```
+
+
+```{r}
+# find any duplicated rows in our dataset
+duplicated_rows <- dataset[duplicated(dataset),]
+duplicated_rows
+```
+
+
+```{r}
+# overview of the dataset
+summary(dataset)
+```
+# Handling outliers
+
+```{r}
+# checking for outliers on time spent on site
+boxplot(dataset$Daily.Time.Spent.on.Site)
+
+# there appears to be no outliers in the daily time spent on site column
+```
+```{r}
+# checking for outliers in age column
+boxplot(dataset$Age)
+
+# There appears to be no presence of outliers in the age column.
+```
+```{r}
+# checking for outliers in area income
+boxplot(dataset$Area.Income)
+
+# viewing the exact outliers in the column rows
+boxplot.stats(dataset$Area.Income)$out
+
+# the resulting outliers are as a result of the area income that was below average
+```
+
+
+```{r}
+# checking for outliers in daily internet usage column
+boxplot(dataset$Daily.Internet.Usage)
+
+# There appears to be no outliers in the daily internet usage column
+```
+
+## Univariate Graphical Exploratory Data Analysis
+
+### 1. Measures of Central Tendency
+
+#### Daily Time Spent on Site
+```{r}
+# mean
+mean(dataset$Daily.Time.Spent.on.Site)
+```
+> mean time spent on site on a daily is 65.0002
+
+```{r}
+# median 
+median(dataset$Daily.Time.Spent.on.Site)
+```
+> Median for the average time spent on site is 68
+
+```{r}
+# mode
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+getmode(dataset$Daily.Time.Spent.on.Site)
+```
+> The most common duration spent on site is 62.26
+
+#### Age
+
+```{r}
+# mean of age
+mean(dataset$Age)
+```
+> The mean age  was 36 years
+```{r}
+# median
+median(dataset$Age)
+```
+> The median age was 35 years
+```{r}
+# mode
+getmode(dataset$Age)
+```
+> The most frequent age was 31 years
+
+#### Area Income
+```{r}
+# mean of area income
+mean(dataset$Area.Income)
+```
+> The mean for the area income is 55000
+```{r}
+# median of area income
+median(dataset$Area.Income)
+```
+> The median for the area income was 57012
+```{r}
+# mode of area income
+getmode(dataset$Area.Income)
+```
+> The modal income for the area income was 61834
+
+#### Daily internet usage
+```{r}
+# mean of daily internet usage
+mean(dataset$Daily.Internet.Usage)
+```
+>  The mean of daily internet usage is 180
+```{r}
+# median of daily internet usage
+median(dataset$Daily.Internet.Usage)
+```
+> The median of daily internet usage is 183
+```{r}
+# mode
+getmode(dataset$Daily.Internet.Usage)
+```
+> The mode of daily internet usage was 167.22
+
+## 2. Measures of Dispersion
+
+#### Daily time spent on site
+```{r}
+# min of daily time spent on site
+min(dataset$Daily.Time.Spent.on.Site)
+```
+
+> The minimum daily time spent on site was 32.6
+```{r}
+# max of daily time spent on site
+max(dataset$Daily.Time.Spent.on.Site)
+```
+> The maximum daily time spent on site was 91.43
+```{r}
+# range of daily time spent on site
+range(dataset$Daily.Time.Spent.on.Site)
+```
+> The range of daily time spent on site was 32.60 on the minimum and 91.43 on the maximum
+```{r}
+# quantiles for the daily time spent on site
+quantile(dataset$Daily.Time.Spent.on.Site)
+```
+> The 25% quantile we have 51.36 and the 75% quantile we have 78.55
+```{r}
+# variance of daily time spent on site
+var(dataset$Daily.Time.Spent.on.Site)
+```
+> The variance for the daily time spent on site was 251.34
+```{r}
+# standard deviation for the daily time spent on site
+sd(dataset$Daily.Time.Spent.on.Site)
+```
+> The standard deviation for the daily time spent on site is 15.85
+
+#### Age
+```{r}
+# min of Age 
+min(dataset$Age)
+```
+> The minimum age was 19 years
+```{r}
+# max of Age
+max(dataset$Age)
+```
+> The maximum age was 61 years old
+```{r}
+range(dataset$Age)
+```
+> The range for the age was 19 years the youngest and 61 years the oldest
+```{r}
+# quantile for the age
+quantile(dataset$Age)
+```
+> The 25% quantile has 29 years and the 75% quantile has 42 years.
+```{r}
+# variance of age
+var(dataset$Age)
+```
+> The variance of the age was 77.19
+```{r}
+# standard deviation of the age
+sd(dataset$Age)
+```
+> The standard deviation of the age was 8.79
+
+#### Area Income
+```{r}
+# min of area income
+min(dataset$Area.Income)
+```
+> The minimum of the area income is 13996.5
+```{r}
+# max of area income
+max(dataset$Area.Income)
+```
+> The maximum of the area income is 79484.8
+```{r}
+# range of area income
+range(dataset$Area.Income)
+```
+> The range of area income is 13996.5 on the low and 79484.8 on the high
+```{r}
+# quantile of area income
+quantile(dataset$Area.Income)
+```
+> The 25% quantile had 47031.80 and the 75% quantile had 65470.64 
+
+```{r}
+# variance of area income
+var(dataset$Area.Income)
+```
+> The variance of the area income is 179952406
+
+```{r}
+# standard deviation of area income
+sd(dataset$Area.Income)
+```
+
+> The standard deviation of area income is 13414.63
+
+#### Daily Internet Usage
+```{r}
+# min of daily internet usage
+min(dataset$Daily.Internet.Usage)
+```
+> The minimum of daily internet usage was 104.78
+
+```{r}
+# max of daily internet usage
+max(dataset$Daily.Internet.Usage)
+```
+
+> The maximum of daily internet usage was 269.96
+
+```{r}
+# range of daily internet usage
+range(dataset$Daily.Internet.Usage)
+```
+
+> The range of the daily internet usage was 104.78 on the low and 269.96 on the high
+
+```{r}
+# quantile of the daily internet usage
+quantile(dataset$Daily.Internet.Usage)
+```
+
+> The 25% quantile had 138.83 and the 75% quantile had 218.79
+
+```{r}
+# variance of the daily internet usage
+var(dataset$Daily.Internet.Usage)
+```
+
+> The variance of the daily internet usage was 1927.42
+
+```{r}
+# standard deviation of the daily internet usage
+sd(dataset$Daily.Internet.Usage)
+```
+
+> The standard deviation of the daily internet usage was 43.90.
+
+### Univariate Graphical
+
+#### BarChart
+```{r}
+library(ggplot2)
+
+# plot the distribution of clicked on ad
+ggplot(dataset, aes(x = Clicked.on.Ad)) +
+         
+  geom_bar(fill = "yellow", 
+           color="black") +
+
+  
+  labs(title = "Barchart of clicked on ad",
+       x = "Clicked on Ad", 
+       y = "Frequency")
+```
+
+> There appears to be an equal distribution of people who clicked the add and those who did not.
+
+
+```{r}
+
+# plot the distribution of Gender
+ggplot(dataset, aes(x = Male)) +
+         
+  geom_bar(fill = "orange", 
+           color="black") +
+  labs(title = "Barchart of Gender distribution",
+       x = "Gender", 
+       y = "Frequency")
+```
+> There appears to be more females compared to the Male(0 = represents females while 1 = represents males).
+
+#### BarGraph
+```{r}
+Age_frequency <- table(dataset$Age)
+barplot(Age_frequency)
+```
+> The age of 31 had the highest frequency.
+
+
+#### Histogram
+```{r}
+# Histogram of Daily time spent on site
+hist(dataset$Daily.Time.Spent.on.Site)
+```
+> The duration between 75 and 85 had the highest frequency.
+
+
+```{r}
+# histogram of age
+hist(dataset$Age)
+```
+> The age between 25 years and 30 years had the highest frequency
+
+
+```{r}
+# histogram of Area Income
+hist(dataset$Area.Income)
+```
+> The Area income between 60000 and 70000 had the highest frequency.
+
+
+```{r}
+# histogram of daily internet usage
+hist(dataset$Daily.Internet.Usage)
+```
+> The usage between 200 and 250 had the highest frequency consecutively.
+
+
+# Bivariate and Multivariate Graphical Data Analysis
+
+## 1. Bivariate analysis
+
+#### Covariance
+```{r}
+# covariance between daily time spent on site and age
+cov(dataset$Daily.Time.Spent.on.Site,dataset$Age)
+```
+> The covariance between daily time spent on site and age is -46.17. It indicates a negative linear relationship between the two variables.
+
+```{r}
+# covariance between area income and daily internet usage
+cov(dataset$Area.Income,dataset$Daily.Internet.Usage)
+```
+> The covariance between area income and daily internet usage is 198762.5. It indicates a positive linear relationship between the two variables.
+
+```{r}
+# covariance between daily internet usage and age
+cov(dataset$Daily.Internet.Usage,dataset$Age)
+```
+
+> The covariance between daily internet usage and age is -141.6348. It indicates a negative linear relationship between the two variables.
+
+
+```{r}
+# covariance between daily time spent on site and area income
+cov(dataset$Daily.Time.Spent.on.Site,dataset$Area.Income)
+```
+
+> The covariance between daily time spent on site and area income is 66130.81 . It indicates a positive linear relationship between the two variables.
+
+
+
+#### Correlation Coefficient
+
+```{r}
+# correlation coefficient between area income and daily internet usage
+cor(dataset$Area.Income,dataset$Daily.Internet.Usage)
+```
+> The correlation coefficient between area income and daily internet usage is 0.3375.
+
+
+
+```{r}
+# correlation coefficient between daily time spent on site and area income
+cor(dataset$Daily.Time.Spent.on.Site,dataset$Area.Income)
+```
+> The correlation coefficient between daily time spent on site and area income is 0.311.
+
+
+
+#### Scatter plot 
+
+```{r}
+# scatterplot between age and daily time spent on site
+ggplot(dataset,
+       
+       aes(x = Daily.Time.Spent.on.Site,
+           y = Age)) +
+  
+  geom_point(color="darkred", 
+             size = 2, 
+             alpha=.8) +
+  
+  scale_y_continuous(limits = c(19, 61)) +
+  
+  scale_x_continuous(limits=c(30, 100)) + 
+  
+  labs(x = "Daily Time spent on site",
+       
+       y = "Age",
+       
+       title = "Scatter plot between Age and Daily time spent on site")
+```
+
+> The scatter plot of daily time spent on site and age shows us that between the ages 20 years and 40 years spent more time on site.
+
+
+
+
+```{r}
+# scatter plot  between area income and daily internet usage
+# plot(dataset$Area.Income,dataset$Daily.Internet.Usage, xlab="area income", ylab="daily internet usage") 
+
+
+ggplot(dataset,
+       
+       aes(x = Daily.Internet.Usage,
+           y = Area.Income)) +
+  
+  geom_point(color="darkgreen", 
+             size = 2, 
+             alpha=.8) +
+  
+  scale_y_continuous(label = scales::dollar, 
+                     limits = c(5000, 80000)) +
+  
+  scale_x_continuous(limits=c(100, 270)) + 
+  
+  labs(x = "Daily Internet Usage",
+       
+       y = "Area Income",
+       
+       title = "Scatter plot between Area income and Daily internet usage")
+```
+> The scatter plot between area income and daily internet usage Shows us that the people with an area income above 40000 spent more time daily on site.
+
+
+
+
+```{r}
+# scatter plot between daily internet usage and age
+
+ggplot(dataset,
+       
+       aes(x = Daily.Internet.Usage,
+           y = Age)) +
+  
+  geom_point(color='darkblue', 
+             size = 2, 
+             alpha=.8) +
+  
+  scale_y_continuous(limits = c(19, 61)) +
+  
+  scale_x_continuous(limits=c(100, 270)) + 
+  
+  labs(x = "Daily Internet Usage",
+       
+       y = "Age",
+       
+       title = "Scatter plot between Daily internet usage and Age")
+
+```
+> The scatter plot between daily internet usage and age shows us that the age between 20 and 45 years had among the highest daily internet usage.
+
+
+
+
+```{r}
+# scatter plot between daily time spent on site and area income
+
+#install.packages("ggplot2", dep=T)
+#library(ggplot2)
+
+
+ggplot(dataset,
+       
+       aes(x = Daily.Time.Spent.on.Site,
+           y = Area.Income)) +
+  
+  geom_point(color="purple", 
+             size = 2, 
+             alpha=.8) +
+  
+  scale_y_continuous(label = scales::dollar, 
+                     limits = c(5000, 80000)) +
+  
+  scale_x_continuous(limits=c(30, 100)) + 
+  
+  labs(x = "Daily Time spent on site",
+       
+       y = "Area Income",
+       
+       title = "Scatter plot of Daily time spent on site vs Area income")
+```
+> The scatter plot between daily time spent on site and area income shows us that those with an area income between 40,000 and 60,000 are the ones who spend more time on site. 
+
+
+
+
+### BarChart
+```{r}
+# barchart of Clicked on ad  vs Mean  Area Income
+
+library(dplyr)
+library(ggplot2)
+
+plotdata <- dataset %>%
+  group_by(Clicked.on.Ad) %>%
+  summarize(mean_area_income = mean(Area.Income))
+
+library(scales)
+ggplot(plotdata, 
+       aes(x = factor(Clicked.on.Ad,
+                      labels = c("Did not click on ad",
+                                 "Clicked on ad")), 
+                      y = mean_area_income)) +
+  
+  
+  
+  geom_text(aes(label = dollar(mean_area_income)),
+            vjust = -0.25) +
+              
+  scale_y_continuous(limits = c(1000, 100000), 
+                     label = dollar) +
+  labs(title = "mean area income by if they clicked on ad", 
+       x = "",
+       y = "")
+
+```
+> From our plot the people who had a lesser mean area income were the ones who clicked on the ad while the people who had higher mean area income did not really click on the ads.
+
+
+
+
+```{r}
+
+# barchart of mean time spent on site vs clicked on ad
+library(dplyr)
+plotdata <- dataset %>%
+  group_by(Clicked.on.Ad) %>%
+  summarize(mean_time_spent_on_site = mean(Daily.Time.Spent.on.Site))
+
+# plot mean salaries
+ggplot(plotdata, 
+       aes(x = Clicked.on.Ad, 
+           y = mean_time_spent_on_site)) +
+  geom_bar(stat = "identity",
+           fill = "orange")+
+  labs(title = "mean time spent on site by if they clicked on ad", 
+       x = "Clicked on ad",
+       y = "mean time spent on site")
+
+```
+> From the plot it is likely that the people who spent less time on the site are likely to have clicked on the ads while those who spent more time did not click on the ads.
+
+
+
+
+```{r}
+# bar chart of mean age vs clicked on ad
+plotdata <- dataset %>%
+  group_by(Clicked.on.Ad) %>%
+  summarize(mean_age = mean(Age))
+
+# plot mean salaries
+ggplot(plotdata, 
+       aes(x = Clicked.on.Ad, 
+           y = mean_age)) +
+  geom_bar(stat = "identity",
+           fill = "green")+
+  labs(title = "mean age by if they clicked on ad", 
+       x = "Clicked on ad",
+       y = "mean age")
+```
+> From our plot it is evident that those with a mean age of around 40years were likely to click on the ad compared to the ones below that mean age.
+
+
+
+
+```{r}
+# bar chart of mean internet usage vs clicked on ad
+plotdata <- dataset %>%
+  group_by(Clicked.on.Ad) %>%
+  summarize(mean_internet_usage = mean(Daily.Internet.Usage))
+
+# plot mean salaries
+ggplot(plotdata, 
+       aes(x = Clicked.on.Ad, 
+           y = mean_internet_usage)) +
+  geom_bar(stat = "identity",
+           fill = "purple")+
+  labs(title = "mean internet usage by if they clicked on ad", 
+       x = "Clicked on ad",
+       y = "mean internet usage")
+```
+> From our plot it is evident that the people who spent more time on the internet were less likely to click on the ads compared to those who spent little time on the internet.
+
+
+## Implementing the solution
+
+```{r}
+input <- dataset[, c("Daily.Time.Spent.on.Site","Age","Area.Income","Daily.Internet.Usage","Male","Clicked.on.Ad")]
+# preview the selected input predictor variables
+head(input)
+```
+
+
+
+
+
+## KNN
+
+```{r}
+set.seed(123)
+
+# Randomizing the rows, creates a uniform distribution of 500
+random <- runif(500)
+dataset_random <- input[order(random),]
+
+# Selecting the first 6 rows from iris_random
+head(dataset_random)
+```
+
+```{r}
+# splitting the dataset into the training set and test set
+
+library(caTools)
+set.seed(123)
+split <- sample.split(input$Clicked.on.Ad, SplitRatio = 0.75)
+training_set <- subset(input, split == TRUE)
+test_set <- subset(input, split == FALSE)
+
+# feature scaling
+training_set[-6] <- scale(training_set[-6])
+test_set[-6] <- scale(test_set[-6])
+```
+
+```{r}
+# fitting KNN classifier to the training set and predicting the test set results
+library(class)
+y_pred = knn(train = training_set[,-6],
+             test = test_set[,-6],
+             cl = training_set[,6],
+             k = 5)
+y_pred
+```
+```{r}
+# making the Confusion matrix
+cm = table(test_set[,6],y_pred)
+cm
+```
+> Our model obtained 13 incorrect predictions and 237 correct predictions out of 250 observations of the test set
+
+
+
+
+
+## Decision trees
+
+```{r}
+# install.packages("rpart.plot")	
+
+
+library(rpart.plot)
+library(rpart)
+#library(caret)
+
+m <- rpart(formula = Clicked.on.Ad~Daily.Time.Spent.on.Site+Age+Area.Income+Daily.Internet.Usage+Male, data = input,
+           method = "class")
+rpart.plot(m)
+
+```
+
+```{r}
+# predicting the test set results
+p <- predict(m, input, type = "class")
+table(p, input$Clicked.on.Ad)
+```
+> Our Decision tree made 957 correct predictions and 43 incorrect predictions out of 1000 observations on the test set.
+
+
+
+
+## SVM
+
+```{r}
+# splitting the dataset into the training set and test set
+#install.packages('caTools')
+library(caTools)
+set.seed(123)
+split <- sample.split(input$Clicked.on.Ad, SplitRatio = 0.75)
+training_set <- subset(input, split == TRUE)
+test_set <- subset(input, split == FALSE)
+
+# feature scaling
+training_set[-6] <- scale(training_set[-6])
+test_set[-6] <- scale(test_set[-6])
+```
+
+
+```{r}
+# Fitting the classifier to the training set
+#install.packages('e1071')
+library(e1071)
+classifier = svm(formula =Clicked.on.Ad~Daily.Time.Spent.on.Site+Age+Area.Income+Daily.Internet.Usage+Male,
+                  data = training_set,
+                  type = 'C-classification',
+                  kernel = 'radial')
+```
+
+
+
+```{r}
+# predicting the test set results
+y_pred <- predict(classifier, newdata = test_set[-6])
+y_pred
+```
+> predictions of the test set observations, for each user of the test set, our classifier predicts whether the user clicks on the ads or not.
+
+```{r}
+# making the confusion matrix
+cm <- table(test_set[,6],y_pred)
+cm
+```
+> our model obtained 237 correct predictions and 13 incorrect predictions
+
+
+
+
+
+
+## Naive Bayes
+
+```{r}
+# Naive Bayes
+
+# splitting the dataset into the training set and test set
+#install.packages('caTools')
+library(caTools)
+set.seed(123)
+split <- sample.split(input$Clicked.on.Ad, SplitRatio = 0.75)
+training_set <- subset(input, split == TRUE)
+test_set <- subset(input, split == FALSE)
+
+# feature scaling
+training_set[-6] <- scale(training_set[-6])
+test_set[-6] <- scale(test_set[-6])
+
+```
+
+```{r}
+# Fitting Naive Bayes to the Training set
+library(e1071)
+classifier = naiveBayes(x = training_set[-6],
+                        y = training_set$Clicked.on.Ad)
+
+```
+
+```{r}
+# Predicting the Test set results
+y_pred = predict(classifier, newdata = test_set[-6])
+y_pred
+```
+```{r}
+# Making the Confusion Matrix
+cm = table(test_set[, 6], y_pred)
+cm
+```
+> The model obtained 12 incorrect predictions and 238 correct predictions out of 250 observations of the test set
+
+
+
+
+##### Conclusions and Recommendations
+
+> We implemented some Machine learning algorithms on the dataset to help us predict the outcome whether a customer clicked on the ads or not.
+
+> Among the algorithms implemented were KNN, Decision Trees, SVM and Naive Bayes which guided us in getting the number of correct and incorrect predictions of the probability of a customer clicking on the ads.
+
+
+> From our analysis we found that the people who had a lower area income rate are the ones who were most likely to have clicked on the ads meaning they were captivated by the online cryptography course which maybe would be an ideal way for them to increase their incomes.
+
+> We have also established that the people who spent more time on the site were less likely to have clicked on the ads compared to those who spent less time on the site which could be the new people to the blog site thus the online cryptography course would be ideal to new site visitors.
+
+> In addition the people with mean age of above 40 years old were likely to have clicked on the ads compared to the population with the mean age of 31 years and below. This means that the online cryptography course would be more marketable to the mean age group of 40 years of the population on site.
+
+> Lastly we have seen from our analysis that the mean of the people who had high internet usage were less likely to have clicked on the ads  compared to the ones who had low internet usage thus it would be better for the entrepreneur to focus on a more captivating ad which would appeal to the people who had high internet usage to click on the ads.
+
+
